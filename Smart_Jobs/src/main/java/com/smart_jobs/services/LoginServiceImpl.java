@@ -3,6 +3,8 @@ package com.smart_jobs.services;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +14,8 @@ import com.smart_jobs.web.model.Login;
 @Service
 public class LoginServiceImpl implements LoginService{
 
+	private static final Logger LOGGER = LogManager.getLogger(LoginServiceImpl.class);
+	
 	@Autowired
 	LoginRepo loginRepo;
 
@@ -26,6 +30,7 @@ public class LoginServiceImpl implements LoginService{
 	public Login loginCheck1(String un, String pwd,String role) {
 		Login login=loginRepo.findByUserIdAndPwdAndRole(un, pwd,role);
 		System.out.println(login);
+		LOGGER.info(login);
 		return login;
 	}
 
@@ -34,8 +39,10 @@ public class LoginServiceImpl implements LoginService{
 		// TODO Auto-generated method stub
 		Optional<Login> login = loginRepo.findById(email);
 		if(login.isPresent()) {
+			LOGGER.debug(login);
 			return login.get();
 		}
+		
 		return null;
 	}
 	

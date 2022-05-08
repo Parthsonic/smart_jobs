@@ -75,4 +75,11 @@ public class JobSeekerPersonalController {
 		jobSeekerPersonalService.saveImage(file, jSeekerId); 
 		
 	}
+	
+	@PostMapping("/uploadResume")
+	public void uploadResume(@RequestParam("myFile") MultipartFile file,@RequestParam("jsId") String jSeekerId) {
+		System.out.println("file");
+		jobSeekerPersonalService.saveResume(file, jSeekerId); 
+		
+	}
 }

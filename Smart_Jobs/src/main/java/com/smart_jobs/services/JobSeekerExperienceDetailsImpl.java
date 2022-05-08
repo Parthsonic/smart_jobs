@@ -2,6 +2,8 @@ package com.smart_jobs.services;
 
 import java.util.Optional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ import com.smart_jobs.web.model.Login;
  */
 
 /*
+ * 
  * I have to add Principal to get the current user id 
  * so that I can set foreign key.
  * 
@@ -48,6 +51,8 @@ import com.smart_jobs.web.model.Login;
 @Service
 public class JobSeekerExperienceDetailsImpl implements JobSeekerExperienceDetailsService {
 
+	private static final Logger LOGGER = LogManager.getLogger(JobSeekerExperienceDetailsImpl.class);
+	
 	@Autowired
 	private JobSeekerExperienceDetailsRepo experienceDetailsRepo;
 

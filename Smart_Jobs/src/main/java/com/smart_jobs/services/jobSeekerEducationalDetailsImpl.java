@@ -2,6 +2,8 @@ package com.smart_jobs.services;
 
 import java.util.Optional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,8 @@ import com.smart_jobs.web.model.JobSeekerEducationDetails;
 @Service
 public class jobSeekerEducationalDetailsImpl implements JobSeekerEducationalDetailsService {
 
+	private static final Logger LOGGER = LogManager.getLogger(jobSeekerEducationalDetailsImpl.class);
+	
 	@Autowired
 	private JobSeekerEducationalDetailsRepo educationalDetailsReo;
 
@@ -44,6 +48,7 @@ public class jobSeekerEducationalDetailsImpl implements JobSeekerEducationalDeta
 
 		
 		educationalDetailsReo.save(jsEducation);
+		LOGGER.debug("Educational Details saved.");
 	}
 
 	@Override
@@ -80,6 +85,7 @@ public class jobSeekerEducationalDetailsImpl implements JobSeekerEducationalDeta
 //		Login login = loginRepo.findByEmail(email);
 
 //		JobSeekerEducationDetails educationalDetails = educationalDetailsReo.findByLogin(login);
+		LOGGER.debug("Educational details deleted");
 		educationalDetailsReo.deleteById(education_id);
 	}
 } // end of class

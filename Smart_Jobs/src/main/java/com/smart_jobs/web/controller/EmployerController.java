@@ -1,5 +1,7 @@
 package com.smart_jobs.web.controller;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,24 +31,8 @@ import com.smart_jobs.web.model.Employer;
 @RequestMapping("/Employee")
 public class EmployerController {
 
-//	@Autowired
-//	Employer_Service empService;
-//	
-//	@Autowired
-//	LoginService loginService;
-//	
-//	@PostMapping("/registerEmp")
-//	public ResponseEntity<Object> registerEmp(@RequestBody Employer emp,Optional<Login> login){
-//		login=this.loginService.loginCheck(emp.getLogin().getUn(),emp.getLogin().getPwd());
-//		if(login.isEmpty()) {
-//			this.empService.saveEmp(emp);
-//			return new ResponseEntity<>("Employee"+emp,HttpStatus.CREATED);
-//		}
-//		else {
-//			return new ResponseEntity<>("Employer already exist",HttpStatus.INTERNAL_SERVER_ERROR);
-//		}
-//		
-//	}
+	private static final Logger LOGGER = LogManager.getLogger(EmployerController.class);
+	
 	@Autowired
 	private EmployerService empService;
 	
@@ -54,6 +40,7 @@ public class EmployerController {
 	public ResponseEntity<String> addEmployee(@RequestBody Employer emp) {
 		try {
 			System.out.println(emp.getLogin().getUserId());
+			LOGGER.debug(emp.getLogin().getUserId());
 			empService.add(emp);
 		} catch (EmployerAlreadyExists e) {
 			// TODO Auto-generated catch block

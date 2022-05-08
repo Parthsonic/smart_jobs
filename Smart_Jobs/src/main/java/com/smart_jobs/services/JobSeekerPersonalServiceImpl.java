@@ -1,6 +1,8 @@
 package com.smart_jobs.services;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -8,6 +10,8 @@ import java.util.Set;
 
 import javax.transaction.Transactional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,6 +42,8 @@ import com.smart_jobs.web.model.Login;
 @Transactional
 public class JobSeekerPersonalServiceImpl implements JobSeekerPersonalService {
 
+	private static final Logger LOGGER = LogManager.getLogger(JobSeekerPersonalServiceImpl.class);
+	
 	@Autowired
 	private JobSeekerPersonalRepo jobSeekerRepo;
 
@@ -82,7 +88,8 @@ public class JobSeekerPersonalServiceImpl implements JobSeekerPersonalService {
 //		jobSeeker.setResume(jsPersonal.getResume());
 //		jobSeeker.setLogin();
 		Set<JsSkills> jsSkills = jsPersonal.getSkills();
-		System.out.println(jsPersonal);
+		//System.out.println(jsPersonal);
+		//LOGGER.debug(jsPersonal);
 		Login login = loginRepo.saveAndFlush(jsPersonal.getLogin());
 		jsPersonal = jobSeekerRepo.save(jsPersonal);
 		JobSeekerEducationDetails jsEd = jsPersonal.getJsEduId();
@@ -95,7 +102,7 @@ public class JobSeekerPersonalServiceImpl implements JobSeekerPersonalService {
 			skills.setSr_no(jsPersonal);
 			jsSkillsRepo.save(skills);
 		}
-		
+		LOGGER.debug("Job Seeker Personal details saved.");
 	}
 
 	@Override
@@ -115,6 +122,7 @@ public class JobSeekerPersonalServiceImpl implements JobSeekerPersonalService {
 		JobSeekerPersonal personalDetails = jobSeekerRepo.findByLogin_UserId(email);
 //		System.out.println("Persona;Details>>>>"+personalDetails);
 		JobSeekerPersonal personalResponse = new JobSeekerPersonal();
+		//LOGGER.debug(personalDetails);
 		return personalDetails;
 	}
 
@@ -145,6 +153,7 @@ public class JobSeekerPersonalServiceImpl implements JobSeekerPersonalService {
 		}
 		jobSeekerRepo.deleteById(sr_no);
 		loginRepo.delete(jsPersonal.getLogin());
+		LOGGER.debug("Job sekker personal details is deleted.");
 	}
 	
 	@Override
@@ -155,7 +164,9 @@ public class JobSeekerPersonalServiceImpl implements JobSeekerPersonalService {
 		for(JobActivityStatus job: jobas) {
 			apJobSeekers.add(job.getJspersonal());
 		}
+		//LOGGER.debug(apJobSeekers);
 		return apJobSeekers;
+		
 	}
 
 	@Override
@@ -164,6 +175,19 @@ public class JobSeekerPersonalServiceImpl implements JobSeekerPersonalService {
 		JobSeekerPersonal jsp = jobSeekerRepo.findByLogin_UserId(id);
 		try {
 			jsp.setPhoto(file.getBytes());
+			jobSeekerRepo.save(jsp);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	public void saveResume(MultipartFile file, String id) {
+		// TODO Auto-generated method stub
+		JobSeekerPersonal jsp = jobSeekerRepo.findByLogin_UserId(id);
+		try {
+			jsp.setResume(file.getBytes());
 			jobSeekerRepo.save(jsp);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

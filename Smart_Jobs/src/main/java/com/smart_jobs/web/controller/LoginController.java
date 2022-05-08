@@ -3,6 +3,8 @@ package com.smart_jobs.web.controller;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +16,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.smart_jobs.services.LoginService;
+import com.smart_jobs.services.LoginServiceImpl;
 import com.smart_jobs.web.model.Login;
 
 @CrossOrigin
 @RestController
 public class LoginController {
 
+	private static final Logger LOGGER = LogManager.getLogger(LoginServiceImpl.class);
+	
 	@Autowired
 	LoginService loginService;
 //	
@@ -53,9 +58,11 @@ public class LoginController {
 			if(lData!=null){
 				String role=lData.getRole();
 				System.out.println("Yes");
+				LOGGER.info("Successfully Login");
 				return new ResponseEntity<Object>(HttpStatus.ACCEPTED); 
 			}
 			else {
+				LOGGER.error("Can not found login info.");
 				System.out.println("No");
 				return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
 			}

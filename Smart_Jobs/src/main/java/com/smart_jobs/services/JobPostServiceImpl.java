@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,6 +31,8 @@ import com.smart_jobs.web.model.Skills;
 @Service
 public class JobPostServiceImpl implements JobPostService {
 
+	private static final Logger LOGGER = LogManager.getLogger(JobPostServiceImpl.class);
+	
 	@Autowired
 	private JobPostRepository jobPostRepo;
 	
@@ -49,8 +53,10 @@ public class JobPostServiceImpl implements JobPostService {
 		Optional<JobPost> op = jobPostRepo.findById(id);
 		if(op.isPresent()) {
 			return op.get();}
-	   else
-			throw new JobPostNotFound("Sorry Job Post not found");
+	   else {
+		   LOGGER.error("Sorry Job Post not found");
+		   throw new JobPostNotFound("Sorry Job Post not found");
+	   }
 		
 	}
 	
@@ -88,13 +94,14 @@ public class JobPostServiceImpl implements JobPostService {
 		job.setPostedDate(LocalDate.now());
 		job = jobPostRepo.save(job);
 		System.out.println(skills);
+		LOGGER.debug("Skills: " + skills);
 		for(Skills skill : skills) {
 			System.out.println(skill);
 			skill.setJobPostId(job);
 			skill.setLogin(job.getEmployee().getLogin());
 			skillsRepo.save(skill);
 		}
-		
+		LOGGER.debug("Job is posted.");
 		return "Job " + job.getJobPostId() + " is posted successfully";
 	}
 //	
@@ -104,8 +111,10 @@ public class JobPostServiceImpl implements JobPostService {
 			if(op.isPresent()) {
 				JobPost job = op.get();
 				//System.out.println("jobs"+job);
+				//LOGGER.debug("jobs" + job);
 				List<JobActivityStatus> jobas = jsActRepo.findByJobPost_JobPostId(job.getJobPostId());
 				//System.out.println(jobas);
+				//LOGGER.debug(jobas);
 				if(!jobas.isEmpty()) {
 					for(JobActivityStatus jobact : jobas) {
 						jsActRepo.delete(jobact);
@@ -115,10 +124,13 @@ public class JobPostServiceImpl implements JobPostService {
 					skillsRepo.delete(skill);
 				}
 				jobPostRepo.delete(job);
+				LOGGER.debug("Job Deleted.");
 		        return "job "+ job.getJobPostId()+ " deleted successfully";
 			}
-			 else
-					return "sorry! Job is not found";
+			 else {
+				 LOGGER.error("sorry! Job is not found");	
+				 return "sorry! Job is not found";
+			 }
 	}
 
 
@@ -166,16 +178,23 @@ public class JobPostServiceImpl implements JobPostService {
 			for(Skills skill:skills)skill.setSkillId(null);
 			job = jobPostRepo.save(job);
 			System.out.println("skillls"+skills);
+			LOGGER.debug("Skillls" + skills);
 			for(Skills skill : skills) {
 				skill.setJobPostId(job);
 				skill.setLogin(job.getEmployee().getLogin());
 				System.out.println("skill :::::"+skill);
+				LOGGER.debug("skill :::::" + skill);
 				skillsRepo.save(skill);
+				LOGGER.debug("Skillls saved successfully");
 			}
+			LOGGER.debug("Job is updated.");
 			return "Job "+job.getJobPostId()+" is updated successfully";}
-	   else
-			return "sorry! job is not found";
-		}
+	   else {
+		   LOGGER.error("Job is not found.");
+		   return "sorry! job is not found";
+			
+	   }
+	   }
 
 	@Override
 	public List<JobPost> findJobPostByEmail(String email) throws JobPostNotFound{

@@ -29,7 +29,7 @@ import com.smart_jobs.web.model.Login;
 @Service
 public class EmployerServiceImpl implements EmployerService {
 
-	private static final Logger LOGGER=LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger(EmployerServiceImpl.class);
 	
 	@Autowired
 	private EmployerRepository employerRepo;
@@ -49,25 +49,31 @@ public class EmployerServiceImpl implements EmployerService {
 		
 		Employer empList;
 		empList = findEmployerByName(employer.getLogin().getUserId());
+		LOGGER.debug("Employer List: "+empList);
 		if(empList == null) {
 			System.out.println("Yeah you can add" + employer.getLogin().getUserId());
 			companyRepo.save(employer.getCompany());
 			employerRepo.save(employer);
-			LOGGER.info("Employer Saved!!!");
+			LOGGER.debug("Employer is Added in database.");
 		}
-		else 
+		else {
+			LOGGER.error("Employer exist");
 			throw new EmployerAlreadyExists("Sorry!! Employer is Already Exists...");
+		}
+			
 	}
 
 	@Override
 	public void edit(Employer employer) throws EmployerNotFound {
 		// TODO Auto-generated method stub
 		Employer empList = findEmployerByName(employer.getLogin().getUserId());
-		if(empList == null)
+		if(empList == null) {
+			LOGGER.error("Employer is not found.");
 			throw new EmployerNotFound("Sorry!! Employer is not Found...");
+		}
 		else {
 			employer.setEmployerNo(empList.getEmployerNo());
-			 
+			LOGGER.debug("Employer: "+employer);
 			System.out.println(employer);
 			employerRepo.save(employer);
 		}
@@ -77,8 +83,10 @@ public class EmployerServiceImpl implements EmployerService {
 	public String delete(String empId,String empPwd) throws EmployerNotFound, JobPostNotFound {
 		// TODO Auto-generated method stub
 		Employer employer = findEmployerByName(empId);
-		if(employer == null)
+		if(employer == null) {
+			LOGGER.error("Sorry!! Employer is not Found...");
 			throw new EmployerNotFound("Sorry!! Employer is not Found...");
+		}
 		else {
 			if(employer.getLogin().getPwd().equals(empPwd)) {
 				List<JobPost> jp = jobPostRepo.findByEmployee_login_userId(empId);
@@ -91,10 +99,13 @@ public class EmployerServiceImpl implements EmployerService {
 				if(employerRepo.countByCompany_CompanyName(employer.getCompany().getCompanyName())<=0) {
 					companyRepo.delete(employer.getCompany());
 				}
+				LOGGER.debug("Employee Deleted");
 				return "Employee Deleted Successfully";
 			}
-			else
+			else {
+				LOGGER.debug("Wrong password.");
 				return "Please Enter Password Correctly";
+			}
 		}
 	}
 

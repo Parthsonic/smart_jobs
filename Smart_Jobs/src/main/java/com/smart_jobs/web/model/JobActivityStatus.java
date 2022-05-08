@@ -42,9 +42,6 @@ public class JobActivityStatus {
 	@NotNull
 	private JobPost jobPost;
 	
-//	private List<JobPost> jobPosts;
-	// Add List of JobPost so that return of calling applied job method
-	// will be an array of applied jobs by jobseeker
 	
 	private Date applyDate;
 	

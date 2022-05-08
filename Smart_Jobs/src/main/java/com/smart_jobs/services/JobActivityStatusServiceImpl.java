@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +35,8 @@ import com.smart_jobs.web.model.JobSeekerPersonal;
 @Service
 public class JobActivityStatusServiceImpl implements JobActivityStatusService {
 
+	private static final Logger LOGGER = LogManager.getLogger(JobActivityStatusServiceImpl.class);
+	
 	@Autowired
 	private JobActivityRepository activityRepo;
 	
@@ -94,7 +98,9 @@ public class JobActivityStatusServiceImpl implements JobActivityStatusService {
 		List<Long> jobPostId = activityRepo.getJobPostId();
 		
 		// debug
-		System.out.println(jobPostId);
+//		System.out.println(jobPostId);
+//		
+//		LOGGER.debug(jobPostId);
 		
 		for(Long i:jobPostId) {
 			jobPosts = jobPostRepo.findByJobPostId(i);
@@ -105,26 +111,22 @@ public class JobActivityStatusServiceImpl implements JobActivityStatusService {
 	@Override
 	public void applyJobs(JobActivityStatus appliedRequest) throws AlreadyApplied {
 		
-//		JobActivityStatus appliedJobs = new JobActivityStatus();
-//		
-//		appliedJobs.setJspersonal(appliedRequest.getJspersonal());
-//		appliedJobs.setJobPost(appliedRequest.getJobPost());
-//		appliedJobs.setApplyDate(appliedRequest.getApplyDate());
-//		appliedJobs.setRejectedDate(appliedRequest.getRejectedDate());
-//		appliedJobs.setJobStatus(appliedRequest.getJobStatus());
 		JobSeekerPersonal js = jobskRepo.findByLogin_UserId(appliedRequest.getJspersonal().getLogin().getUserId());
 		JobActivityStatus jas = activityRepo.findByJobPost_JobPostIdAndJspersonal_SrNo(appliedRequest.getJobPost().getJobPostId(), js.getSrNo());
-		System.out.println("postId" + appliedRequest.getJobPost());
-		System.out.println("seekerId" + appliedRequest.getJspersonal());
-		System.out.println("jas"+ jas);
+		LOGGER.debug("postId" + appliedRequest.getJobPost());
+		LOGGER.debug("seekerId" + appliedRequest.getJspersonal());
+		LOGGER.debug("jas"+ jas);
 		if(jas == null) {
 			System.out.println(appliedRequest);
 			appliedRequest.setJspersonal(js);
 			appliedRequest.setJobPost(jobPostRepo.getById(appliedRequest.getJobPost().getJobPostId()));
 			activityRepo.save(appliedRequest);
+			LOGGER.debug("Applied Successfully");
 		}else {
+			LOGGER.error("Already Applied!!!");
 			throw new AlreadyApplied("Already Applied!!!");
 		}
+		
 		
 	}
 
@@ -134,9 +136,11 @@ public class JobActivityStatusServiceImpl implements JobActivityStatusService {
 		Optional<JobActivityStatus> joas = activityRepo.findById(jobASId);
 		if(joas.isPresent()) {
 			activityRepo.delete(joas.get());
+			LOGGER.debug("JobPost Deleted Successfully");
 			return "JobPost Deleted Successfully";
 		}
 		else {
+			LOGGER.error("Sorry!!! JobPostActivityStatus Not found");
 			throw new JobActivityStatusNotFound("Sorry!!! JobPostActivityStatus Not found");
 		}
 	}

@@ -33,4 +33,6 @@ public interface JobSeekerPersonalService {
 	List<JobSeekerPersonal> findJsByJpId(Long JbId);
 	
 	public void saveImage(MultipartFile file,String id);
+
+	void saveResume(MultipartFile file, String id);
 }
